@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package aiquota.v1;
+
+option go_package = "github.com/go-aiquota/proto/quotapb";
+
+// QuotaProvider is implemented by every go-aiquota provider plugin
+// (hashicorp/go-plugin, gRPC backend) and called by the go-aiquota/tray host.
+service QuotaProvider {
+  // Describe returns static facts about the provider: what it's called and,
+  // for cookie-based providers, where the host's embedded onboarding browser
+  // should navigate and which domain's cookies to capture once login
+  // completes. It takes no credential and is safe to call before any
+  // account has been onboarded.
+  rpc Describe(DescribeRequest) returns (ProviderInfo);
+
+  // FetchQuota returns the current quota snapshot for one account. The
+  // credential travels only over this call's request, on go-plugin's
+  // AutoMTLS loopback channel; a plugin must not persist it beyond the call.
+  rpc FetchQuota(FetchQuotaRequest) returns (QuotaSnapshot);
+}
+
+message DescribeRequest {}
+
+message ProviderInfo {
+  // Short machine name, e.g. "claude".
+  string name = 1;
+  // URL the host's embedded browser should open to start an interactive
+  // login for a new account of this provider.
+  string login_url = 2;
+  // Domain whose cookies the host captures from the isolated onboarding
+  // session once login completes, forming the FetchQuotaRequest credential.
+  string cookie_domain = 3;
+}
+
+message FetchQuotaRequest {
+  // Host-assigned label for the account this call is for, echoed back in
+  // the snapshot so the host can match responses to accounts when polling
+  // several in parallel.
+  string account_label = 1;
+  // Cookie name -> value for cookie_domain (or other credential fields for
+  // a future non-cookie provider). Never logged by a conforming provider.
+  map<string, string> credential = 2;
+}
+
+message QuotaWindow {
+  // "session" (e.g. rolling 5h) | "weekly" | provider-defined.
+  string label = 1;
+  double used = 2;
+  double limit = 3;
+  // e.g. "messages", "tokens", "%".
+  string unit = 4;
+  // Unix seconds the window resets at; 0 = unknown.
+  int64 resets_at_unix = 5;
+}
+
+message QuotaSnapshot {
+  string account_label = 1;
+  // Provider-defined plan identifier, e.g. "max", "team_premium".
+  string plan_kind = 2;
+  int64 fetched_at_unix = 3;
+  repeated QuotaWindow windows = 4;
+  // Non-fatal issues the host may want to surface (e.g. "endpoint shape
+  // drifted, showing last-known values").
+  repeated string warnings = 5;
+}
