@@ -45,7 +45,15 @@ login URL and cookie domain — the host's onboarding flow doesn't change.
 2. Serve it with `hcplugin.Serve(&hcplugin.ServeConfig{HandshakeConfig:
    plugin.Handshake, Plugins: plugin.Map(yourImpl), GRPCServer:
    hcplugin.DefaultGRPCServer})`.
-3. Never format a raw credential value into a log line or error string —
+3. Name the built binary `go-aiquota-plugin-<name>` (e.g.
+   `go-aiquota-plugin-chatgpt`) and put it on `PATH`. That's the whole
+   registration step: `go-aiquota/tray` discovers every plugin matching
+   that naming convention at startup (`quota.DiscoverProviders`) and calls
+   its `Describe` to learn its login URL and cookie domain — there's no
+   manifest to edit and no host code to change. `<name>` is also what ends
+   up in `Account.Provider` and the "Add account…" menu (capitalized for
+   display), so keep it short and lowercase.
+4. Never format a raw credential value into a log line or error string —
    wrap it in `secret.Secret` the moment you have it, and reveal it only at
    the single call site that needs the raw value (e.g. building an HTTP
    request). See `go-aiquota/plugin-claude` for the reference
