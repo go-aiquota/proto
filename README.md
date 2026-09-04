@@ -1,4 +1,10 @@
+<p align="center"><img src="https://raw.githubusercontent.com/go-aiquota/brand/main/social/go-aiquota.png" alt="go-aiquota/proto" width="720"></p>
+
 # go-aiquota / proto
+
+[![CI](https://github.com/go-aiquota/proto/actions/workflows/ci.yml/badge.svg)](https://github.com/go-aiquota/proto/actions/workflows/ci.yml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/go-aiquota/proto.svg)](https://pkg.go.dev/github.com/go-aiquota/proto)
+[![License: BSD-3-Clause](https://img.shields.io/badge/License-BSD--3--Clause-blue.svg)](LICENSE)
 
 The shared contract between `go-aiquota/tray` (the host) and every AI-quota
 provider plugin (`go-aiquota/plugin-claude`, and others to come): a
