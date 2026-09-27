@@ -29,7 +29,7 @@ jobs:
         shell: bash
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: '1.26.4'
       - name: Vet
@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: '1.26.4'
       - run: test -z "$(gofmt -l .)" || { gofmt -l .; exit 1; }
@@ -74,7 +74,7 @@ jobs:
           - { goos: linux, goarch: s390x }
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: '1.26.4'
       - name: Cross-compile (CGO=0)
